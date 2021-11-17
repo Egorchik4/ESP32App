@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "669835678864",
+    "firebase_url": "https://esp32-f19ff-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "esp32-f19ff",
+    "storage_bucket": "esp32-f19ff.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:669835678864:android:255f90a1edcce2b3213415",
+        "android_client_info": {
+          "package_name": "com.example.esp32app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "669835678864-38prfs5behjdgsjfkhbskhu0ao2jvu19.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYjwHMGK1jF_m_0uN-v6N-3WK73juZb0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "669835678864-38prfs5behjdgsjfkhbskhu0ao2jvu19.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
