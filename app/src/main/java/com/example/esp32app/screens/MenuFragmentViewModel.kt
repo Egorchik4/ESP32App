@@ -18,19 +18,30 @@ class MenuFragmentViewModel : ViewModel() {
         super.onCleared()
     }
 
-    //private val data = MutableLiveData<String>()
+    //private var data = MutableLiveData<String>()
     //val Live: LiveData<String> = data
 
+    private var seekdata = MutableLiveData<Int>()
+    val LiveSeek: LiveData<Int> = seekdata
 
-    private val data: MutableLiveData<String> by lazy {
-        MutableLiveData<String>()
+    private var swichdata = MutableLiveData<List<String>>()
+    val LiveSwich: LiveData<List<String>> = swichdata
+
+    //private val data: MutableLiveData<String> by lazy {
+    //    MutableLiveData<String>()
+    //}
+
+    //val Live = MutableLiveData<String>()
+
+
+    fun sendseek(s: Int){
+        seekdata.value = s
     }
 
-    val Live = MutableLiveData<String>()
-
-    fun sendtext(s: String){
-        Live.value = s
+    fun sendswich(s: String, t: String){
+        swichdata.value = listOf(s,t)
     }
+
 
     //fun valueseekBar(n: Int){
      //

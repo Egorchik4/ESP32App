@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,14 +21,12 @@ import com.google.firebase.ktx.Firebase
 class MenuFragment : Fragment() {
 
     lateinit var binding: FragmentMenuBinding  // название разметки layout + 'binding'
-    var ViewMod = MenuFragmentViewModel()
+    //val ViewMod = MenuFragmentViewModel()
+    private val ViewMod: MenuFragmentViewModel by activityViewModels()  //Вот так!!!
     var firedata = FireClass()
 
     /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
     }*/
 
@@ -35,9 +34,6 @@ class MenuFragment : Fragment() {
         binding = FragmentMenuBinding.inflate(inflater)
 
         //ViewMod = ViewModelProvider(this).get(MenuFragmentViewModel::class.java)  //??
-
-        Log.e("aaa", "Fragment create")
-
         return binding.root
 
     }
@@ -45,13 +41,29 @@ class MenuFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e("aaa", "Fragment create1")
+        //Log.e("aaa", "Fragment create1")
 
-        // установка наблюдателя
-        ViewMod.Live.observe(viewLifecycleOwner, Observer<String> {
-            binding.textView.text = ViewMod.Live.value  // выставление
+        /*ViewMod.Live.observe(viewLifecycleOwner,{
+            binding.textView.text = ViewMod.Live.value
 
+        })*/
+        ViewMod.LiveSwich.observe(viewLifecycleOwner,{
+            var list: List<String> = ViewMod.LiveSwich.value!!
+
+            if (list[1] == "1"){
+                binding.switchLed.setChecked(true)
+            }else{
+                binding.switchLed.setChecked(false)
+            }
+            binding.textView.text = list[0]
         })
+
+        ViewMod.LiveSeek.observe(viewLifecycleOwner,{
+            binding.seekBar.progress = ViewMod.LiveSeek.value!!
+            binding.textView.text = ViewMod.LiveSeek.value.toString()
+        })
+
+
 
         // ползунок
         binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -59,7 +71,7 @@ class MenuFragment : Fragment() {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
                 // Display the current progress of SeekBar
                 //binding.textView.text = ViewModel.sendtext(i.toString())
-                ViewMod.sendtext(i.toString())
+                ViewMod.sendseek(i)
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -78,21 +90,21 @@ class MenuFragment : Fragment() {
             //binding.seekBar.progress = ViewModel.sendtext("0").toInt()
             //binding.textView.text = ViewModel.sendtext("0")
             //ViewModel.valueseekBar(0)
-            ViewMod.sendtext("0")
+            ViewMod.sendseek(0)
         }
 
         binding.switchLed.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 // The switch is enabled/checked
                 //binding.textView.text = ViewModel.sendtext("Switch on")
-                ViewMod.sendtext("Switch on")
+                ViewMod.sendswich("Switch on","1")
                 val r : Int
                 r = 1
                 firedata.senddata("data","led",r)
 
             } else {
                 //binding.textView.text = ViewModel.sendtext("Switch off") // The switch is disabled
-                ViewMod.sendtext("Switch off")
+                ViewMod.sendswich("Switch off","0")
                 val r : Int
                 r = 0
                 firedata.senddata("data","led",r)
@@ -101,15 +113,9 @@ class MenuFragment : Fragment() {
             }
         }
         binding.bSend.setOnClickListener {
-            var r: String
             var t: Int
-            r = binding.textView.text.toString()
-            t = r.toInt()
-
-
+            t = ViewMod.LiveSeek.value!!  // взятие значения из LiveSeek
             firedata.senddata("data","number",t)
-
-
         }
 
 
