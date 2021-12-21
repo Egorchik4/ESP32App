@@ -21,57 +21,80 @@ import com.google.firebase.ktx.Firebase
 class MenuFragment : Fragment() {
 
     lateinit var binding: FragmentMenuBinding  // название разметки layout + 'binding'
-    //val ViewMod = MenuFragmentViewModel()
+
     private val ViewMod: MenuFragmentViewModel by activityViewModels()  //Вот так!!!
     var firedata = FireClass()
 
-    /*override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        }
-    }*/
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentMenuBinding.inflate(inflater)
-
-        //ViewMod = ViewModelProvider(this).get(MenuFragmentViewModel::class.java)  //??
         return binding.root
-
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //Log.e("aaa", "Fragment create1")
 
-        /*ViewMod.Live.observe(viewLifecycleOwner,{
-            binding.textView.text = ViewMod.Live.value
-
-        })*/
-        ViewMod.LiveSwich.observe(viewLifecycleOwner,{
-            var list: List<String> = ViewMod.LiveSwich.value!!
+        // наблюдатель SwitchLed
+        ViewMod.LedSwich.observe(viewLifecycleOwner,{
+            var list: List<String> = ViewMod.LedSwich.value!!   // взятие значений из LiveSwich
 
             if (list[1] == "1"){
                 binding.switchLed.setChecked(true)
             }else{
                 binding.switchLed.setChecked(false)
             }
-            binding.textView.text = list[0]
-        })
-
-        ViewMod.LiveSeek.observe(viewLifecycleOwner,{
-            binding.seekBar.progress = ViewMod.LiveSeek.value!!
-            binding.textView.text = ViewMod.LiveSeek.value.toString()
+            binding.textViewLed.text = list[0]
         })
 
 
+        // наблюдатель SwitchM1
+        ViewMod.MOneSwich.observe(viewLifecycleOwner,{
+            var list: List<String> = ViewMod.MOneSwich.value!!   // взятие значений из LiveSwich
 
-        // ползунок
-        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            if (list[1] == "1"){
+                binding.switchup.setChecked(true)
+            }else{
+                binding.switchup.setChecked(false)
+            }
+            binding.textViewUp.text = list[0]
+        })
 
+
+        // наблюдатель SwitchM2
+        ViewMod.MTwoSwich.observe(viewLifecycleOwner,{
+            var list: List<String> = ViewMod.MTwoSwich.value!!   // взятие значений из LiveSwich
+
+            if (list[1] == "1"){
+                binding.switchdown.setChecked(true)
+            }else{
+                binding.switchdown.setChecked(false)
+            }
+            binding.textViewDown.text = list[0]
+        })
+
+        // наблюдатель seekBarUp
+        ViewMod.LiveSeekBarUp.observe(viewLifecycleOwner,{
+            binding.seekBarUp.progress = ViewMod.LiveSeekBarUp.value!!
+            binding.textViewUp.text = ViewMod.LiveSeekBarUp.value.toString()
+        })
+
+
+        // наблюдатель seekBarDowm
+        ViewMod.LiveSeekBarDown.observe(viewLifecycleOwner,{
+            binding.seekBarDowm.progress = ViewMod.LiveSeekBarDown.value!!
+            binding.textViewDown.text = ViewMod.LiveSeekBarDown.value.toString()
+        })
+
+
+
+
+        // ползунок seekBarUp
+        binding.seekBarUp.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            // при перемещении ползунка
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                // Display the current progress of SeekBar
-                //binding.textView.text = ViewModel.sendtext(i.toString())
-                ViewMod.sendseek(i)
+                ViewMod.sendseekup(i) // вызов функции sendseek и передача в неё значений ползунка
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
@@ -86,60 +109,97 @@ class MenuFragment : Fragment() {
         })
 
 
+
+
+        // ползунок seekBarDowm
+        binding.seekBarDowm.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+
+            // при перемещении ползунка
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+                ViewMod.sendseekdown(i) // вызов функции sendseek и передача в неё значений ползунка
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+                //Toast.makeText(applicationContext,"start tracking",Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+                //Toast.makeText(applicationContext,"stop tracking",Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
+
         binding.bSTOP.setOnClickListener {
-            //binding.seekBar.progress = ViewModel.sendtext("0").toInt()
-            //binding.textView.text = ViewModel.sendtext("0")
-            //ViewModel.valueseekBar(0)
-            ViewMod.sendseek(0)
+            ViewMod.sendseekdown(0)
+            ViewMod.sendseekup(0)
+            firedata.senddata("data","numberDown",0)
+            firedata.senddata("data","numberUp",0)
         }
 
         binding.switchLed.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                // The switch is enabled/checked
-                //binding.textView.text = ViewModel.sendtext("Switch on")
                 ViewMod.sendswich("Switch on","1")
                 val r : Int
                 r = 1
                 firedata.senddata("data","led",r)
 
             } else {
-                //binding.textView.text = ViewModel.sendtext("Switch off") // The switch is disabled
                 ViewMod.sendswich("Switch off","0")
                 val r : Int
                 r = 0
                 firedata.senddata("data","led",r)
-
-
             }
         }
-        binding.bSend.setOnClickListener {
-            var t: Int
-            t = ViewMod.LiveSeek.value!!  // взятие значения из LiveSeek
-            firedata.senddata("data","number",t)
+
+        // switch включения первого двигателя
+        binding.switchup.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                ViewMod.oneswich("on","1")
+                val r : Int
+                r = 1
+                firedata.senddata("data","Motor1",r)
+
+            } else {
+                ViewMod.oneswich("off","0")
+                val r : Int
+                r = 0
+                firedata.senddata("data","Motor1",r)
+            }
         }
 
+        // switch включения второго двигателя
+        binding.switchdown.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                ViewMod.twoswich("on","1")
+                val r : Int
+                r = 1
+                firedata.senddata("data","Motor2",r)
+
+            } else {
+                ViewMod.twoswich("off","0")
+                val r : Int
+                r = 0
+                firedata.senddata("data","Motor2",r)
+            }
+        }
+
+        binding.bSend.setOnClickListener {
+            var e: Int
+            var t: Int
+
+            e = ViewMod.LiveSeekBarUp.value!!
+            t = ViewMod.LiveSeekBarDown.value!!                    // взятие значения из LiveSeekDown
+
+            firedata.senddata("data","numberDown",e)
+            firedata.senddata("data","numberUp",t)
+
+
+
+        }
 
     }
 
-
-
-    /*companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MenuFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MenuFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }*/
 }

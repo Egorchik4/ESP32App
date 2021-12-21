@@ -9,43 +9,55 @@ import androidx.lifecycle.ViewModel
 // работа с информацией (информация не уничтожается при повороте экрана)
 class MenuFragmentViewModel : ViewModel() {
 
+    // Создание LiveData
 
-    init{
-        Log.e("aaa", "ViewModel start")
+    // для верхнего seekbar
+    private var seekdataup = MutableLiveData<Int>()
+    val LiveSeekBarUp: LiveData<Int> = seekdataup
+
+    // для нижнего seekbar
+    private var seekdatadown = MutableLiveData<Int>()
+    val LiveSeekBarDown: LiveData<Int> = seekdatadown
+
+    // для swichLed
+    private var swichled = MutableLiveData<List<String>>()
+    val LedSwich: LiveData<List<String>> = swichled
+
+    // для swich мотора в одну сторону
+    private var swichone = MutableLiveData<List<String>>()
+    val MOneSwich: LiveData<List<String>> = swichone
+
+    // для swich мотора в другую сторону
+    private var swichtwo = MutableLiveData<List<String>>()
+    val MTwoSwich: LiveData<List<String>> = swichtwo
+
+
+
+    // для нижнего seekbar
+    fun sendseekdown(s: Int){
+        seekdatadown.value = s
     }
-    override fun onCleared() {
-        Log.e("aaa", "ViewModel cleared")
-        super.onCleared()
+
+    // для верхнего seekbar
+    fun sendseekup(s: Int){
+        seekdataup.value = s
     }
 
-    //private var data = MutableLiveData<String>()
-    //val Live: LiveData<String> = data
-
-    private var seekdata = MutableLiveData<Int>()
-    val LiveSeek: LiveData<Int> = seekdata
-
-    private var swichdata = MutableLiveData<List<String>>()
-    val LiveSwich: LiveData<List<String>> = swichdata
-
-    //private val data: MutableLiveData<String> by lazy {
-    //    MutableLiveData<String>()
-    //}
-
-    //val Live = MutableLiveData<String>()
-
-
-    fun sendseek(s: Int){
-        seekdata.value = s
-    }
-
+    // для переключателя swich
     fun sendswich(s: String, t: String){
-        swichdata.value = listOf(s,t)
+        swichled.value = listOf(s,t)
     }
 
 
-    //fun valueseekBar(n: Int){
-     //
-    //}
+    // для переключателя swich
+    fun oneswich(s: String, t: String){
+        swichone.value = listOf(s,t)
+    }
+
+    // для переключателя swich
+    fun twoswich(s: String, t: String){
+        swichtwo.value = listOf(s,t)
+    }
 
 
 }
